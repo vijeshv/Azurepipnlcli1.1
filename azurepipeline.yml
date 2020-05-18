@@ -58,7 +58,7 @@ jobs:
       script: |
         cd $(Build.SourcesDirectory)
         neoload login --url ${{parameters.neoloadApiUrl}} $(nlw_token) \
-                test-settings --zone $(zone_code) --lgs 2 --scenario jenkinsscenario patch "My Azure Test With CLI" \
+                test-settings --zone $(zone_code) --lgs 2 --scenario jenkinsscenario create "My Azure Test With CLI" \
                 project --path /amex-master.zip upload "My Azure Test With CLI"
   - task: Bash@3
     displayName: Run the NeoLoad test
@@ -68,7 +68,7 @@ jobs:
       script: |
         neoload run \
                        --web-vu 5 \
-                       --as-code default.yaml,slas/uat.yaml \
+                      # --as-code default.yaml,slas/uat.yaml \
                        --name "TestLaunchedFromAzureCI_build_$(Build.BuildNumber)" \
                        --description "Azure example with meta; $(Build.BuildUri)" \
                        "My Azure Test With CLI"
