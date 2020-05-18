@@ -2,7 +2,10 @@ trigger: none
 
 pool:
   vmImage: 'ubuntu-18.04'
-
+variables:
+  nlw_token: $(secret_nlw_token)
+  zone_code: $(NLzone_code)
+  PYTHONUNBUFFERED: 1
 parameters:
 - name: neoloadApiUrl1
   type: string
@@ -19,13 +22,13 @@ resources:
   containers:
   - container: neoload_ctrl
     image: neotys/neoload-controller:latest
-    env: { MODE: Managed, NEOLOADWEB_TOKEN: ${{parameters.neoloadToken}}, ZONE: ${{parameters.zoneId}} }
+    env: { MODE: Managed, NEOLOADWEB_TOKEN: $(nlw_token), ZONE: $(zone_code) }
   - container: lg1
     image: neotys/neoload-loadgenerator:latest
-    env: { NEOLOADWEB_TOKEN: ${{parameters.neoloadToken}}, ZONE: ${{parameters.zoneId}}, LG_HOST=lg1, LG_PORT=7101, AGENT_SERVER_PORT=7101 }
+    env: { NEOLOADWEB_TOKEN: $(nlw_token), ZONE: $(zone_code), LG_HOST=lg1, LG_PORT=7101, AGENT_SERVER_PORT=7101 }
   - container: lg2
     image: neotys/neoload-loadgenerator:latest
-    env: { NEOLOADWEB_TOKEN: ${{parameters.neoloadToken}}, ZONE: ${{parameters.zoneId}}, LG_HOST=lg2, LG_PORT=7102, AGENT_SERVER_PORT=7102 }
+    env: { NEOLOADWEB_TOKEN: $(nlw_token), ZONE: $(zone_code), LG_HOST=lg2, LG_PORT=7102, AGENT_SERVER_PORT=7102 }
 
 jobs:
 - job: RunLoadTest
@@ -53,9 +56,10 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        neoload login --url ${{parameters.neoloadApiUrl}} ${{parameters.neoloadToken}} \
-                test-settings --zone ${{parameters.zoneId}} --lgs 2 --scenario smokeScenario patch "My Azure Test With CLI" \
-                project --path tests/neoload_projects/example_1/ upload "My Azure Test With CLI"
+        cd $(Build.SourcesDirectory)
+        neoload login --url ${{parameters.neoloadApiUrl}} $(nlw_token) \
+                test-settings --zone $(zone_code) --lgs 2 --scenario jenkinsscenario patch "My Azure Test With CLI" \
+                project --path /amex-master.zip upload "My Azure Test With CLI"
   - task: Bash@3
     displayName: Run the NeoLoad test
     continueOnError: true
