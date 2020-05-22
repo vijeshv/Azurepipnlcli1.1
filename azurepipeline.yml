@@ -58,7 +58,7 @@ jobs:
       script: |
         cd $(Build.SourcesDirectory)
         neoload login --url ${{parameters.neoloadApiUrl}} $(nlw_token) \
-                test-settings --zone $(zone_code) --lgs 2 --scenario jenkinsscenario create "My Azure Test With CLI" \
+                test-settings --zone $(zone_code) --lgs 2 --scenario jenkinsscenario create "My Azure Test With CLI_$(Build.BuildNumber)" \
                 project --path Amex-master.zip upload "My Azure Test With CLI_$(Build.BuildNumber)"
   - task: Bash@3
     displayName: Run the NeoLoad test
