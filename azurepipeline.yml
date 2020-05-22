@@ -73,6 +73,11 @@ jobs:
                        --description "Azure example with meta; $(Build.BuildUri)" \
                        "My Azure Test With CLI"
   - task: Bash@3
+    inputs:
+       script: |
+         neoload logs-url "Azure_Jpet_$(Build.BuildNumber)"
+
+  - task: Bash@3
     displayName: Get the junit SLA report
     continueOnError: true
     inputs:
